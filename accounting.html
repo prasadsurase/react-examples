@@ -17,7 +17,7 @@
         render: function(){
           return(
             <ul>
-              <li>Transactions: 2</li>
+              <li>Transactions: {this.props.transactionCount}</li>
               <li>Debits: 500</li>
               <li>Credits: 600</li>
               <li>Balance: 100</li>
@@ -111,12 +111,16 @@
           this.setState({ records: records });
         },
 
+        transactionCount: function(){
+          return this.state.records.length;
+        },
+
         render: function(){
           return (
             <div className="container">
               <div className='row'>
                 <div className="col-md-3">
-                  <TransactionsSummary />
+                  <TransactionsSummary transactionCount={this.transactionCount()}/>
                 </div>
                 <div className="col-md-3">
                   <TransactionForm handleNewRecord={this.addRecord}/>
