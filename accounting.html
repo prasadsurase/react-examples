@@ -48,6 +48,8 @@
 
         handleSubmit: function(e){
           e.preventDefault();
+          this.props.handleNewRecord(this.state);
+          this.setState(this.getInitialState());
         },
 
         render: function(){
@@ -92,6 +94,16 @@
       });
 
       var TransactionsDetails = React.createClass({
+        getInitialState: function(){
+          return { records: [] };
+        },
+
+        addRecord: function(record){
+          var records = this.state.records;
+          records.push(record);
+          this.setState({ records: records });
+        },
+
         render: function(){
           return (
             <div className="container">
@@ -100,7 +112,7 @@
                   <TransactionsSummary />
                 </div>
                 <div className="col-md-3">
-                  <TransactionForm />
+                  <TransactionForm handleNewRecord={this.addRecord}/>
                 </div>
               </div>
               <div className='row'>
