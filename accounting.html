@@ -28,12 +28,34 @@
       });
 
       var TransactionForm = React.createClass({
+        getInitialState: function(){
+          return { date: '', reason: '', amount: '' };
+        },
+
+        handleChange: function(e){
+          switch(e.target.name){
+            case 'date':
+              this.setState({date: e.target.value});
+              break;
+            case 'reason':
+              this.setState({reason: e.target.value});
+              break;
+            case 'amount':
+              this.setState({amount: e.target.value});
+              break;
+          }
+        },
+
+        handleSubmit: function(e){
+          e.preventDefault();
+        },
+
         render: function(){
           return (
-            <form>
-              Date: <input type='text' name='date' /><br />
-              Reason: <input type='text' name='reason' /><br />
-              Amount: <input type='integer' name='amount' /><br />
+            <form onSubmit={this.handleSubmit}>
+              Date: <input type='text' name='date' value={this.state.date} onChange={this.handleChange}/><br />
+              Reason: <input type='text' name='reason' value={this.state.reason} onChange={this.handleChange}/><br />
+              Amount: <input type='integer' name='amount' value={this.state.amount} onChange={this.handleChange}/><br />
               <button type='submit'>Submit</button>
               <button type='button'>Cancel</button>
             </form>
