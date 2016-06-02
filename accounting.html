@@ -105,12 +105,21 @@
       });
 
       var TransactionRow = React.createClass({
+        handleDelete: function(e){
+          e.preventDefault();
+          this.props.handleDeleteRecord(this.props.record);
+        },
+
         render: function(){
           return (
             <tr>
               <td>{this.props.record.date}</td>
               <td>{this.props.record.reason}</td>
               <td>{this.props.record.amount}</td>
+              <td>
+                <button className="btn btn-primary" >Edit</button>
+                <button className="btn btn-danger" onClick={this.handleDelete}>Delete</button>
+              </td>
             </tr>
           );
         }
@@ -120,7 +129,7 @@
         render: function(){
           var rows = [];
           this.props.records.map(function(record, index){
-            rows.push(<TransactionRow key={index} record={record} />);
+          rows.push(<TransactionRow key={index} record={record} handleDeleteRecord={this.props.handleDeleteRecord}/>);
           }.bind(this));
           return (
             <table className="table table-striped table-hover table-bordered">
@@ -129,6 +138,7 @@
                   <th> Date </th>
                   <th> Reason </th>
                   <th> Amount </th>
+                  <th> Actions </th>
                 </tr>
               </thead>
               <tbody>
@@ -141,12 +151,22 @@
 
       var TransactionsDetails = React.createClass({
         getInitialState: function(){
-          return { records: [] };
+          return { records: [
+            { date: '1-6-2016', reason: 'Salary', amount: 1000},
+            { date: '2-6-2015', reason: 'EMI', amount: -400}
+          ] };
         },
 
         addRecord: function(record){
           var records = this.state.records;
           records.push(record);
+          this.setState({ records: records });
+        },
+
+        deleteRecord: function(record){
+          var records = this.state.records;
+          var index  = records.indexOf(record);
+          records.splice(index, 1);
           this.setState({ records: records });
         },
 
@@ -203,7 +223,7 @@
               <div className='row'>
                 <div className="col-md-offset-2 col-md-8">
                   <div className="well">
-                    <TransactionsTable records={this.state.records}/>
+                    <TransactionsTable records={this.state.records} handleDeleteRecord={this.deleteRecord}/>
                   </div>
                 </div>
               </div>
