@@ -44,26 +44,30 @@
 
       var TransactionForm = React.createClass({
         getInitialState: function(){
-          return { date: '', reason: '', amount: '' };
+          return { record: { date: '', reason: '', amount: '' }, editting: false };
+        },
+
+        componentWillReceiveProps: function(nextProps) {
+          this.setState({ record: nextProps.recordToEdit, editting: true });
         },
 
         handleChange: function(e){
           switch(e.target.name){
             case 'date':
-              this.setState({date: e.target.value});
+              this.setState({ record: { date: e.target.value } });
               break;
             case 'reason':
-              this.setState({reason: e.target.value});
+              this.setState({ record: { reason: e.target.value } });
               break;
             case 'amount':
-              this.setState({amount: e.target.value});
+              this.setState({ record: { amount: e.target.value } });
               break;
           }
         },
 
         handleSubmit: function(e){
           e.preventDefault();
-          this.props.handleNewRecord(this.state);
+          this.props.handleNewRecord(this.state.record);
           this.setState(this.getInitialState());
         },
 
@@ -78,19 +82,19 @@
               <div className="form-group">
                 <label for="date" className="col-sm-2 control-label">Date: </label>
                 <div className="col-sm-10">
-                  <input type='text' name='date' className="form-control" value={this.state.date} onChange={this.handleChange}/>
+                  <input type='text' name='date' className="form-control" value={this.state.record.date} onChange={this.handleChange}/>
                 </div>
               </div>
               <div className="form-group">
                 <label for="reason" className="col-sm-2 control-label">Reason: </label>
                 <div className="col-sm-10">
-                  <input type='text' name='reason' className="form-control" value={this.state.reason} onChange={this.handleChange}/>
+                  <input type='text' name='reason' className="form-control" value={this.state.record.reason} onChange={this.handleChange}/>
                 </div>
               </div>
               <div className="form-group">
                 <label for="amount" className="col-sm-2 control-label">Amount: </label>
                 <div className="col-sm-10">
-                  <input type='integer' name='amount' className="form-control" value={this.state.amount} onChange={this.handleChange}/>
+                  <input type='integer' name='amount' className="form-control" value={this.state.record.amount} onChange={this.handleChange}/>
                 </div>
               </div>
               <div className="form-group">
@@ -110,6 +114,11 @@
           this.props.handleDeleteRecord(this.props.record);
         },
 
+        handleEdit: function(e){
+          e.preventDefault();
+          this.props.handleEditRecord(this.props.record);
+        },
+
         render: function(){
           return (
             <tr>
@@ -117,7 +126,7 @@
               <td>{this.props.record.reason}</td>
               <td>{this.props.record.amount}</td>
               <td>
-                <button className="btn btn-primary" >Edit</button>
+                <button className="btn btn-primary" onClick={this.handleEdit} >Edit</button>
                 <button className="btn btn-danger" onClick={this.handleDelete}>Delete</button>
               </td>
             </tr>
@@ -129,7 +138,8 @@
         render: function(){
           var rows = [];
           this.props.records.map(function(record, index){
-          rows.push(<TransactionRow key={index} record={record} handleDeleteRecord={this.props.handleDeleteRecord}/>);
+            rows.push(<TransactionRow key={index} record={record} handleDeleteRecord={this.props.handleDeleteRecord}
+            handleEditRecord={this.props.handleEditRecord}/>);
           }.bind(this));
           return (
             <table className="table table-striped table-hover table-bordered">
@@ -151,16 +161,21 @@
 
       var TransactionsDetails = React.createClass({
         getInitialState: function(){
-          return { records: [
-            { date: '1-6-2016', reason: 'Salary', amount: 1000},
-            { date: '2-6-2015', reason: 'EMI', amount: -400}
-          ] };
+          return {
+            records: [ { date: '1-6-2016', reason: 'Salary', amount: 1000},
+            { date: '2-6-2015', reason: 'EMI', amount: -400}],
+            recordToEdit: {}
+          };
         },
 
         addRecord: function(record){
           var records = this.state.records;
           records.push(record);
           this.setState({ records: records });
+        },
+
+        editRecord: function(record){
+          this.setState({ recordToEdit: record });
         },
 
         deleteRecord: function(record){
@@ -216,14 +231,15 @@
                 </div>
                 <div className="col-md-4">
                   <div className="well">
-                    <TransactionForm handleNewRecord={this.addRecord}/>
+                    <TransactionForm handleNewRecord={this.addRecord} recordToEdit={this.state.recordToEdit}/>
                   </div>
                 </div>
               </div>
               <div className='row'>
                 <div className="col-md-offset-2 col-md-8">
                   <div className="well">
-                    <TransactionsTable records={this.state.records} handleDeleteRecord={this.deleteRecord}/>
+                    <TransactionsTable records={this.state.records} handleDeleteRecord={this.deleteRecord}
+                    handleEditRecord={this.editRecord}/>
                   </div>
                 </div>
               </div>
