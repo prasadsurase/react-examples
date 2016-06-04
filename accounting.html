@@ -44,31 +44,38 @@
 
       var TransactionForm = React.createClass({
         getInitialState: function(){
-          return { record: { date: '', reason: '', amount: '' }, editting: false };
+          return { record: { date: '', reason: '', amount: '' }, editing: false };
         },
 
         componentWillReceiveProps: function(nextProps) {
-          this.setState({ record: nextProps.recordToEdit, editting: true });
+          this.setState({ record: nextProps.recordToEdit, editing: true });
         },
 
         handleChange: function(e){
+          var record = this.state.record;
           switch(e.target.name){
             case 'date':
-              this.setState({ record: { date: e.target.value } });
+              record.date = e.target.value;
               break;
             case 'reason':
-              this.setState({ record: { reason: e.target.value } });
+              record.reason = e.target.value;
               break;
             case 'amount':
-              this.setState({ record: { amount: e.target.value } });
+              record.amount = e.target.value;
               break;
           }
+          this.setState({ record: record });
         },
 
         handleSubmit: function(e){
           e.preventDefault();
-          this.props.handleNewRecord(this.state.record);
-          this.setState(this.getInitialState());
+          if(this.state.editing){
+            this.props.handleUpdateRecord(this.state.record);
+            this.setState(this.getInitialState());
+          } else {
+            this.props.handleNewRecord(this.state.record);
+            this.setState(this.getInitialState());
+          }
         },
 
         handleCancel: function(e){
@@ -79,6 +86,7 @@
         render: function(){
           return (
             <form onSubmit={this.handleSubmit} className="form-horizontal">
+              <h4>{this.state.editing ? 'Edit Record' : 'New Record'}</h4>
               <div className="form-group">
                 <label for="date" className="col-sm-2 control-label">Date: </label>
                 <div className="col-sm-10">
@@ -164,25 +172,32 @@
           return {
             records: [ { date: '1-6-2016', reason: 'Salary', amount: 1000},
             { date: '2-6-2015', reason: 'EMI', amount: -400}],
-            recordToEdit: {}
+            recordToEdit: {date: '', reason: '', amount: ''}
           };
         },
 
         addRecord: function(record){
           var records = this.state.records;
           records.push(record);
-          this.setState({ records: records });
+          this.setState({ records: records, recordToEdit: {} });
         },
 
         editRecord: function(record){
           this.setState({ recordToEdit: record });
         },
 
+        updateRecord: function(record){
+          var records = this.state.records;
+          var index = records.indexOf(record);
+          records[index] = record;
+          this.setState({ records: records, recordToEdit: {} });
+        },
+
         deleteRecord: function(record){
           var records = this.state.records;
           var index  = records.indexOf(record);
           records.splice(index, 1);
-          this.setState({ records: records });
+          this.setState({ records: records, recordToEdit: {} });
         },
 
         transactionCount: function(){
@@ -231,7 +246,8 @@
                 </div>
                 <div className="col-md-4">
                   <div className="well">
-                    <TransactionForm handleNewRecord={this.addRecord} recordToEdit={this.state.recordToEdit}/>
+                    <TransactionForm handleNewRecord={this.addRecord} recordToEdit={this.state.recordToEdit}
+                    handleUpdateRecord={this.updateRecord}/>
                   </div>
                 </div>
               </div>
