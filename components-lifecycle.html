@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='UTF-8' />
+    <title>React Lifecycle Methods</title>
+    <script src='build/react.js'></script>
+    <script src='build/react-dom.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js'></script>
+  </head>
+  <body>
+    <div id='container' style="margin-top:50px;"></div>
+    <script type='text/babel'>
+      var Parent = React.createClass({
+        getDefaultProps: function() {
+          console.log("Parent - getDefaultProps");
+        },
+
+        getInitialState: function() {
+          console.log("Parent - getInitialState");
+          return { data: "" };
+        },
+
+        componentWillMount: function() {
+          console.log("Parent - componentWillMount");
+        },
+
+        render: function() {
+          console.log("Parent - render");
+          return (
+            <div className="container">
+              <input value={this.state.data} onChange={this.onChange} />
+              <Child data={this.state.data} />
+            </div>
+          );
+        },
+
+        componentDidMount: function() {
+          console.log("Parent - componentDidMount");
+        },
+
+        componentWillUnmount: function() {
+          console.log("Parent - componentWillUnmount");
+        },
+
+        onChange: function(e) {
+          this.setState({ data: e.target.value });
+        }
+      });
+
+      var Child = React.createClass({
+        getDefaultProps: function() {
+          console.log("Child - getDefaultProps");
+        },
+
+        getInitialState: function() {
+          console.log("Child - getInitialState");
+          return { dummy: "" };
+        },
+
+        componentWillMount: function() {
+          console.log("Child - componentWillMount");
+        },
+
+        componentDidMount: function() {
+          console.log("Child - componentDidMount");
+        },
+
+        componentWillUnmount: function() {
+          console.log("Child - componentWillUnmount");
+        },
+
+        componentWillReceiveProps: function(nextProps) {
+          console.log("Child - componentWillReceiveProps");
+          console.log(nextProps);
+        },
+
+        shouldComponentUpdate: function(nextProps, nextState) {
+          console.log("Child - shouldComponentUpdate");
+          return true;
+        },
+
+        componentWillUpdate: function(nextProps, nextState) {
+          console.log("Child - componentWillUpdate");
+          console.log("nextProps:");
+          console.log(nextProps);
+          console.log("nextState:");
+          console.log(nextState);
+        },
+
+        render: function() {
+          console.log("Child - render");
+          return (
+            <div>Props: {this.props.data}</div>
+          );
+        },
+
+        componentDidUpdate: function(previousProps, previousState) {
+          console.log("Child - componentDidUpdate");
+          console.log("previousProps:");
+          console.log(previousProps);
+          console.log("previousState:");
+          console.log(previousState);
+        }
+      });
+
+      ReactDOM.render( <Parent/>, document.getElementById('container'));
+    </script>
+  </body>
+</html>
